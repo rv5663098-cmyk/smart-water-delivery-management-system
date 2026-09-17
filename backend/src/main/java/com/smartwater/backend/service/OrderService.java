@@ -3,6 +3,7 @@ package com.smartwater.backend.service;
 import com.smartwater.backend.entity.Order;
 import com.smartwater.backend.repository.OrderRepository;
 import org.springframework.stereotype.Service;
+import com.smartwater.backend.exception.OrderNotFoundException;
 
 import java.util.List;
 
@@ -24,7 +25,8 @@ public class OrderService {
     }
 
     public Order getOrderById(Long id) {
-        return orderRepository.findById(id).orElse(null);
+       return orderRepository.findById(id)
+        .orElseThrow(() -> new OrderNotFoundException("Order not found with id: " + id));
     }
 
     public void deleteOrder(Long id) {
