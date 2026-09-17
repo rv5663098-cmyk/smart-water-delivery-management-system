@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import com.smartwater.backend.exception.OrderNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -49,4 +50,14 @@ public Map<String, String> handleJsonError(HttpMessageNotReadableException ex) {
 
     return error;
 }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(OrderNotFoundException.class)
+    public Map<String, String> handleOrderNotFound(OrderNotFoundException ex) {
+
+        Map<String, String> error = new LinkedHashMap<>();
+        error.put("error", ex.getMessage());
+
+        return error;
+    }
 }
