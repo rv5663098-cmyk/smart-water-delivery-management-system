@@ -1,9 +1,9 @@
 package com.smartwater.backend.service;
 
 import com.smartwater.backend.entity.Customer;
+import com.smartwater.backend.exception.CustomerNotFoundException;
 import com.smartwater.backend.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
-import com.smartwater.backend.exception.CustomerNotFoundException;
 
 import java.util.List;
 
@@ -24,16 +24,16 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
- public Customer getCustomerById(Long id) {
-    return customerRepository.findById(id)
-            .orElseThrow(() -> new CustomerNotFoundException(id));
-}
-
-  public void deleteCustomer(Long id) {
-    if (!customerRepository.existsById(id)) {
-        throw new CustomerNotFoundException(id);
+    public Customer getCustomerById(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
-    customerRepository.deleteById(id);
-}
+    public void deleteCustomer(Long id) {
+        if (!customerRepository.existsById(id)) {
+            throw new CustomerNotFoundException(id);
+        }
+
+        customerRepository.deleteById(id);
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -36,4 +37,16 @@ public class GlobalExceptionHandler {
 
         return error;
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+@ExceptionHandler(HttpMessageNotReadableException.class)
+public Map<String, String> handleJsonError(HttpMessageNotReadableException ex) {
+
+    Map<String, String> error = new LinkedHashMap<>();
+
+    error.put("error", "Invalid request body");
+    error.put("message", ex.getMostSpecificCause().getMessage());
+
+    return error;
+}
 }
