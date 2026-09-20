@@ -5,9 +5,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Min;
-import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
@@ -18,7 +18,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @ManyToOne
     private Customer customer;
 
@@ -28,10 +27,9 @@ public class Order {
     @Min(value = 1, message = "Quantity must be at least 1")
     private int quantity;
 
-   private Double totalAmount;
+    private Double totalAmount;
 
     private String status;
-
     @Transient
 @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 private Long customerId;
@@ -111,4 +109,5 @@ public Long getProductId() {
 public void setProductId(Long productId) {
     this.productId = productId;
 }
+
 }

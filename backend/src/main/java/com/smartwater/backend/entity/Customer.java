@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 public class Customer {
@@ -18,6 +19,10 @@ public class Customer {
 private String name;
 
 @NotBlank(message = "Mobile is required")
+@Pattern(
+    regexp = "^[6-9][0-9]{9}$",
+    message = "Mobile must be a valid 10-digit Indian mobile number"
+)
 private String mobile;
 
 @NotBlank(message = "Email is required")
