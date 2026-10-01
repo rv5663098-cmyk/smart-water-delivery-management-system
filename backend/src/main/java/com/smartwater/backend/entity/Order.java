@@ -42,7 +42,7 @@ private Long productId;
     }
 
     public Order(Customer customer, WaterProduct product, int quantity,
-                 double totalAmount, String status) {
+                 Double totalAmount, String status) {
         this.customer = customer;
         this.product = product;
         this.quantity = quantity;
@@ -78,13 +78,13 @@ private Long productId;
         this.quantity = quantity;
     }
 
-    public double getTotalAmount() {
-        return totalAmount;
-    }
+public Double getTotalAmount() {
+    return totalAmount;
+}
 
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
-    }
+public void setTotalAmount(Double totalAmount) {
+    this.totalAmount = totalAmount;
+}
 
     public String getStatus() {
         return status;

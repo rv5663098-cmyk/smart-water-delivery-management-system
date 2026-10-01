@@ -29,11 +29,21 @@ public class CustomerService {
                 .orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
-    public void deleteCustomer(Long id) {
-        if (!customerRepository.existsById(id)) {
-            throw new CustomerNotFoundException(id);
-        }
+ public Customer deactivateCustomer(Long id) {
+    Customer customer = customerRepository.findById(id)
+            .orElseThrow(() -> new CustomerNotFoundException(id));
 
-        customerRepository.deleteById(id);
-    }
+    customer.setActive(false);
+
+    return customerRepository.save(customer);
+}
+  public Customer activateCustomer(Long id) {
+    Customer customer = customerRepository.findById(id)
+            .orElseThrow(() -> new CustomerNotFoundException(id));
+
+    customer.setActive(true);
+
+    return customerRepository.save(customer);
+}
+
 }

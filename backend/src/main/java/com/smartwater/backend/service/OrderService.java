@@ -33,6 +33,12 @@ public class OrderService {
         Customer customer =
                 customerService.getCustomerById(order.getCustomerId());
 
+        if (!customer.isActive()) {
+    throw new RuntimeException(
+            "Cannot create order for an inactive customer"
+    );
+}
+
         // Get Product using productId
         WaterProduct product =
                 waterProductService.getProductById(order.getProductId());
@@ -42,6 +48,11 @@ public class OrderService {
             throw new RuntimeException(
                     "Water product not found with id: " + order.getProductId());
         }
+        if (!product.isAvailable()) {
+    throw new RuntimeException(
+            "Cannot create order for an unavailable water product"
+    );
+}
 
         // Set Customer and Product
         order.setCustomer(customer);

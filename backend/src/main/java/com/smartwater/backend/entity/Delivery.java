@@ -12,7 +12,8 @@ public class Delivery {
     private Long id;
 
     @OneToOne
-    private Order order;
+@JoinColumn(name = "order_id", unique = true)
+private Order order;
 
     @NotBlank(message = "Delivery person name is required")
     private String deliveryPerson;

@@ -1,39 +1,30 @@
 package com.smartwater.backend.controller;
-
 import com.smartwater.backend.entity.WaterProduct;
 import com.smartwater.backend.service.WaterProductService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/products")
 public class WaterProductController {
-
     private final WaterProductService waterProductService;
-
     public WaterProductController(WaterProductService waterProductService) {
         this.waterProductService = waterProductService;
     }
-
     @PostMapping
     public WaterProduct createProduct(
             @Valid @RequestBody WaterProduct product) {
 
         return waterProductService.saveProduct(product);
     }
-
     @GetMapping
     public List<WaterProduct> getAllProducts() {
         return waterProductService.getAllProducts();
     }
-
     @GetMapping("/{id}")
     public WaterProduct getProductById(@PathVariable Long id) {
         return waterProductService.getProductById(id);
     }
-
     @PutMapping("/{id}")
     public WaterProduct updateProduct(
             @PathVariable Long id,
@@ -53,6 +44,16 @@ public class WaterProductController {
 
         return waterProductService.saveProduct(existingProduct);
     }
+
+    @PutMapping("/{id}/deactivate")
+public WaterProduct deactivateProduct(@PathVariable Long id) {
+    return waterProductService.deactivateProduct(id);
+}
+
+@PutMapping("/{id}/activate")
+public WaterProduct activateProduct(@PathVariable Long id) {
+    return waterProductService.activateProduct(id);
+}
 
     @DeleteMapping("/{id}")
     public String deleteProduct(@PathVariable Long id) {

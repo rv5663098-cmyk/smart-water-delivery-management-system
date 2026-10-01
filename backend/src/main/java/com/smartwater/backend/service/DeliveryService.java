@@ -24,20 +24,28 @@ public class DeliveryService {
     }
 
     // Create Delivery
-    public Delivery saveDelivery(Delivery delivery) {
+public Delivery saveDelivery(Delivery delivery) {
 
-        Order order = orderRepository.findById(delivery.getOrder().getId())
-                .orElseThrow(() ->
-                        new RuntimeException("Order not found"));
+    Order order = orderRepository.findById(delivery.getOrder().getId())
+            .orElseThrow(() ->
+                    new RuntimeException("Order not found"));
 
-        delivery.setOrder(order);
-
-        if (delivery.getStatus() == null || delivery.getStatus().isBlank()) {
-            delivery.setStatus("ASSIGNED");
-        }
-
-        return deliveryRepository.save(delivery);
+    // Check if delivery already exists for this order
+    if (deliveryRepository.findByOrderId(order.getId()).isPresent()) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Delivery already exists for this order"
+        );
     }
+
+    delivery.setOrder(order);
+
+    if (delivery.getStatus() == null || delivery.getStatus().isBlank()) {
+        delivery.setStatus("ASSIGNED");
+    }
+
+    return deliveryRepository.save(delivery);
+}
 
     // Get All Deliveries
     public List<Delivery> getAllDeliveries() {

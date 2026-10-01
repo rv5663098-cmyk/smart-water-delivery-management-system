@@ -15,6 +15,8 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+     
+
    @NotBlank(message = "Name is required")
 private String name;
 
@@ -70,6 +72,17 @@ private String address;
     public String getAddress() {
         return address;
     }
+
+     
+    private boolean active = true;
+      
+    public boolean isActive() {
+    return active;
+}
+
+public void setActive(boolean active) {
+    this.active = active;
+}
 
     public void setAddress(String address) {
         this.address = address;

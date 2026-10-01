@@ -37,10 +37,6 @@ public Customer createCustomer(
 public Customer updateCustomer(@PathVariable Long id,  @Valid @RequestBody Customer customer) {
     Customer existingCustomer = customerService.getCustomerById(id);
 
-    if (existingCustomer == null) {
-        return null;
-    }
-
     existingCustomer.setName(customer.getName());
     existingCustomer.setMobile(customer.getMobile());
     existingCustomer.setEmail(customer.getEmail());
@@ -49,9 +45,13 @@ public Customer updateCustomer(@PathVariable Long id,  @Valid @RequestBody Custo
     return customerService.saveCustomer(existingCustomer);
 }
 
-    @DeleteMapping("/{id}")
-    public String deleteCustomer(@PathVariable Long id) {
-        customerService.deleteCustomer(id);
-        return "Customer deleted successfully";
-    }
+ @PutMapping("/{id}/deactivate")
+public Customer deactivateCustomer(@PathVariable Long id) {
+    return customerService.deactivateCustomer(id);
+}
+   @PutMapping("/{id}/activate")
+public Customer activateCustomer(@PathVariable Long id) {
+    return customerService.activateCustomer(id);
+}
+
 }
