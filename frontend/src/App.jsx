@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import WaterBackground from "./WaterBackground";
 import "./App.css";
 
 function App() {
@@ -667,6 +668,7 @@ const handleDeleteProduct = async (productId) => {
     
   className="app"
 >
+  <WaterBackground />
       {/* Navbar */}
       <nav className="navbar">
 
