@@ -6,6 +6,7 @@ import com.smartwater.backend.entity.WaterProduct;
 import com.smartwater.backend.repository.OrderRepository;
 import com.smartwater.backend.exception.OrderNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class OrderService {
     }
 
     // Create Order
+    @Transactional
     public Order saveOrder(Order order) {
 
         // Get Customer using customerId
@@ -48,6 +50,15 @@ public class OrderService {
             throw new RuntimeException(
                     "Water product not found with id: " + order.getProductId());
         }
+           
+        // Check stock availability
+if (product.getStockQuantity() < order.getQuantity()) {
+    throw new RuntimeException(
+            "Insufficient stock. Available stock: "
+                    + product.getStockQuantity()
+    );
+}
+
         if (!product.isAvailable()) {
     throw new RuntimeException(
             "Cannot create order for an unavailable water product"
@@ -58,11 +69,21 @@ public class OrderService {
         order.setCustomer(customer);
         order.setProduct(product);
 
-        // Calculate total amount
-        double totalAmount =
-                product.getPrice() * order.getQuantity();
+// Calculate total amount
+double totalAmount =
+        product.getPrice() * order.getQuantity();
 
-        order.setTotalAmount(totalAmount);
+order.setTotalAmount(totalAmount);
+
+// Deduct stock
+int remainingStock =
+        product.getStockQuantity() - order.getQuantity();
+
+waterProductService.updateStock(
+        product.getId(),
+        remainingStock
+);
+
 
         // Default status
         if (order.getStatus() == null || order.getStatus().isBlank()) {
@@ -86,19 +107,61 @@ public class OrderService {
     }
 
     // Delete Order
-    public void deleteOrder(Long id) {
-        orderRepository.deleteById(id);
+   
+@Transactional
+public void deleteOrder(Long id) {
+
+    Order order = orderRepository.findById(id)
+            .orElseThrow(() ->
+                    new OrderNotFoundException(
+                            "Order not found with id: " + id));
+
+    // Restore stock only if order was not already cancelled
+    if (!"CANCELLED".equalsIgnoreCase(order.getStatus())) {
+
+        WaterProduct product = order.getProduct();
+
+        int restoredStock =
+                product.getStockQuantity() + order.getQuantity();
+
+        waterProductService.updateStock(
+                product.getId(),
+                restoredStock
+        );
     }
+
+    orderRepository.delete(order);
+}
+
 
     // Update Order Status
-    public Order updateOrderStatus(Long id, String status) {
+@Transactional
+public Order updateOrderStatus(Long id, String status) {
 
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Order not found"));
+    Order order = orderRepository.findById(id)
+            .orElseThrow(() ->
+                    new RuntimeException("Order not found"));
 
-        order.setStatus(status);
+    String oldStatus = order.getStatus();
 
-        return orderRepository.save(order);
+    // Restore stock only when order is cancelled for the first time
+    if (!"CANCELLED".equalsIgnoreCase(oldStatus)
+            && "CANCELLED".equalsIgnoreCase(status)) {
+
+        WaterProduct product = order.getProduct();
+
+        int restoredStock =
+                product.getStockQuantity() + order.getQuantity();
+
+        waterProductService.updateStock(
+                product.getId(),
+                restoredStock
+        );
     }
+
+    order.setStatus(status);
+
+    return orderRepository.save(order);
+}
+
 }

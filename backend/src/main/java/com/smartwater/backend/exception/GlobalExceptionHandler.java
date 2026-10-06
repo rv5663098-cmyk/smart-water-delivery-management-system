@@ -60,4 +60,15 @@ public Map<String, String> handleJsonError(HttpMessageNotReadableException ex) {
 
         return error;
     }
+  
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+@ExceptionHandler(RuntimeException.class)
+public Map<String, String> handleRuntimeException(RuntimeException ex) {
+
+    Map<String, String> error = new LinkedHashMap<>();
+    error.put("error", ex.getMessage());
+
+    return error;
+}
+
 }

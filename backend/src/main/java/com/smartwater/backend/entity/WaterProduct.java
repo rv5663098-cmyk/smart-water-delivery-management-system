@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 public class WaterProduct {
@@ -25,16 +26,20 @@ public class WaterProduct {
 
     private boolean available;
 
+    @PositiveOrZero(message = "Stock quantity cannot be negative")
+private int stockQuantity;
+
     public WaterProduct() {
     }
 
-    public WaterProduct(String productName, double sizeInLiters,
-                        double price, boolean available) {
-        this.productName = productName;
-        this.sizeInLiters = sizeInLiters;
-        this.price = price;
-        this.available = available;
-    }
+public WaterProduct(String productName, double sizeInLiters,
+                    double price, boolean available) {
+    this.productName = productName;
+    this.sizeInLiters = sizeInLiters;
+    this.price = price;
+    this.available = available;
+    this.stockQuantity = 0;
+}
 
     public Long getId() {
         return id;
@@ -71,4 +76,12 @@ public class WaterProduct {
     public void setAvailable(boolean available) {
         this.available = available;
     }
+
+    public int getStockQuantity() {
+    return stockQuantity;
+}
+
+public void setStockQuantity(int stockQuantity) {
+    this.stockQuantity = stockQuantity;
+}
 }

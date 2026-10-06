@@ -41,6 +41,7 @@ public class WaterProductController {
         existingProduct.setSizeInLiters(product.getSizeInLiters());
         existingProduct.setPrice(product.getPrice());
         existingProduct.setAvailable(product.isAvailable());
+        existingProduct.setStockQuantity(product.getStockQuantity());
 
         return waterProductService.saveProduct(existingProduct);
     }
@@ -53,6 +54,14 @@ public WaterProduct deactivateProduct(@PathVariable Long id) {
 @PutMapping("/{id}/activate")
 public WaterProduct activateProduct(@PathVariable Long id) {
     return waterProductService.activateProduct(id);
+}
+
+@PutMapping("/{id}/stock")
+public WaterProduct updateStock(
+        @PathVariable Long id,
+        @RequestParam int quantity) {
+
+    return waterProductService.updateStock(id, quantity);
 }
 
     @DeleteMapping("/{id}")

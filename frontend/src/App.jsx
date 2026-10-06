@@ -30,6 +30,7 @@ const [productForm, setProductForm] = useState({
   sizeInLiters: "",
   price: "",
   available: true,
+   stockQuantity: 0,
 });
 
   const [loading, setLoading] = useState(true);
@@ -168,9 +169,11 @@ const [customerForm, setCustomerForm] = useState({
       try {
         const errorData = await response.json();
 
-        if (errorData.message) {
-          errorMessage = errorData.message;
-        }
+       if (errorData.error) {
+  errorMessage = errorData.error;
+} else if (errorData.message) {
+  errorMessage = errorData.message;
+}
       } catch {
         // Ignore JSON parsing error
       }
@@ -543,6 +546,7 @@ const handleAddProduct = async (e) => {
       sizeInLiters: Number(productForm.sizeInLiters),
       price: Number(productForm.price),
       available: productForm.available,
+       stockQuantity: Number(productForm.stockQuantity),
     };
 
     let response;
@@ -605,6 +609,7 @@ const handleAddProduct = async (e) => {
       sizeInLiters: "",
       price: "",
       available: true,
+       stockQuantity: 0,
     });
 
     // EDIT MODE RESET
@@ -627,9 +632,54 @@ const handleEditProduct = (product) => {
     sizeInLiters: product.sizeInLiters,
     price: product.price,
     available: product.available,
+     stockQuantity: product.stockQuantity,
   });
 
   setShowProductModal(true);
+};
+
+const handleUpdateStock = async (product) => {
+  const newStock = window.prompt(
+    "Enter new stock quantity:",
+    product.stockQuantity
+  );
+
+  if (newStock === null) {
+    return;
+  }
+
+  const quantity = Number(newStock);
+
+  if (!Number.isInteger(quantity) || quantity < 0) {
+    alert("Please enter a valid stock quantity.");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8080/api/products/${product.id}/stock?quantity=${quantity}`,
+      {
+        method: "PUT",
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to update stock");
+    }
+
+    const updatedProduct = await response.json();
+
+    setProducts((prevProducts) =>
+      prevProducts.map((p) =>
+        p.id === updatedProduct.id ? updatedProduct : p
+      )
+    );
+
+    alert("Stock updated successfully!");
+  } catch (error) {
+    alert(error.message);
+  }
 };
 
 const handleDeleteProduct = async (productId) => {
@@ -1042,6 +1092,7 @@ const handleDeleteProduct = async (productId) => {
       sizeInLiters: "",
       price: "",
       available: true,
+        stockQuantity: 0,
     });
        setEditingProductId(null);  
     setShowProductModal(true);
@@ -1083,6 +1134,9 @@ const handleDeleteProduct = async (productId) => {
           <div>
             <strong>₹{product.price}</strong>
           </div>
+          <p>
+  <strong>Stock:</strong> {product.stockQuantity}
+</p>
 
           <div>
             <span>
@@ -1100,6 +1154,13 @@ const handleDeleteProduct = async (productId) => {
   >
     Edit
   </button>
+
+  <button
+  className="stock-btn"
+  onClick={() => handleUpdateStock(product)}
+>
+  Update Stock
+</button>
 
   {product.available ? (
     <button
@@ -1695,6 +1756,20 @@ const handleDeleteProduct = async (productId) => {
           }
           placeholder="80"
         />
+
+        <label>Stock Quantity</label>
+<input
+  type="number"
+  min="0"
+  value={productForm.stockQuantity}
+  onChange={(e) =>
+    setProductForm({
+      ...productForm,
+      stockQuantity: e.target.value,
+    })
+  }
+  placeholder="100"
+/>
 
         <label className="checkbox-label">
           <input
