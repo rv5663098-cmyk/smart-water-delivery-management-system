@@ -1119,12 +1119,22 @@ const handleDeleteProduct = async (productId) => {
 
     ) : (
 
-      products.map((product) => (
+      products.map((product) => {
+  const stockStatus =
+    product.stockQuantity === 0
+      ? "Out of Stock"
+      : product.stockQuantity <= 10
+      ? "Low Stock"
+      : "In Stock";
+
+  return (
+
 
         <div
   className="water-product-card"
   key={product.id}
 >
+
 
         <div>
   <h3>{product.productName}</h3>
@@ -1136,6 +1146,10 @@ const handleDeleteProduct = async (productId) => {
           </div>
           <p>
   <strong>Stock:</strong> {product.stockQuantity}
+</p>
+
+<p>
+  <strong>Stock Status:</strong> {stockStatus}
 </p>
 
           <div>
@@ -1182,7 +1196,8 @@ const handleDeleteProduct = async (productId) => {
 
         </div>
 
-      ))
+      );
+})
 
     )}
 
